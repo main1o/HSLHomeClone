@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">慧家生活</string>
+
+    <string name="home_scan">扫码</string>
+    <string name="home_nfc">碰一碰</string>
+    <string name="home_my_devices">我的设备</string>
+    <string name="home_nearby_stations">附近站点</string>
+    <string name="home_free_water">免费用水</string>
+    <string name="home_ad_slot">推广位</string>
+
+    <string name="task_watch_ad">看视频得积分</string>
+    <string name="task_sign_in">每日签到</string>
+    <string name="points_format">%1$d 积分</string>
+    <string name="coupon_format">可抵 %1$s 元代金券</string>
+
+    <string name="device_drinking">直饮水</string>
+    <string name="device_shower">淋浴</string>
+    <string name="device_purifier">饮水机</string>
+    <string name="device_laundry">洗衣</string>
+    <string name="device_drier">烘干</string>
+    <string name="device_hair">吹风机</string>
+    <string name="device_vending">售货机</string>
+    <string name="device_charge">充电桩</string>
+    <string name="device_door">门禁</string>
+
+    <string name="station_distance">%1$s m · %2$s</string>
+    <string name="station_available">空闲 %1$d</string>
+    <string name="refresh_failed">加载失败，点击重试</string>
+</resources>
