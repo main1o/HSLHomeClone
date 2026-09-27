@@ -22,28 +22,41 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # 必须显式传 packages：setup-android@v3 的默认值是 'tools platform-tools'，
+      # 而 legacy `tools` 包已从 Google 仓库下架（repository2-3.xml 中已不存在），
+      # 不传就会在 sdkmanager 上挂掉。
+      #
+      # 平台包名也不能写 platforms;android-37：API 37 起改用 minor api level
+      # 命名，仓库里实际是 android-37.0 / 37.1 / 37.2，对应 AGP DSL 的
+      # release(37) { minorApiLevel = 0 }。
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+          packages: >-
+            platforms;android-37.0
+            platforms;android-37.1
+            platforms;android-37.2
+            build-tools;37.0.0
+            platform-tools
 
-      # 注意：sdkmanager 中不存在 "platforms;android-37"。
-      # 从 API 37 起 Google 改用 minor api level 命名，仓库里实际是
-      # platforms;android-37.0 / 37.1 / 37.2（对应 AGP DSL 的
-      # release(37) { minorApiLevel = 0 }），所以这里逐个显式安装。
-      - name: Install Android 37 platform & build-tools
+      # 诊断 + 容错补装：列出仓库可用平台与本地已装目录，个别包缺失也不中断 job
+      - name: Verify installed SDK components
         shell: bash
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          echo "::group::available android-3x platforms in repository"
+          set +e
+          echo "::group::platforms available in sdkmanager repository"
           sdkmanager --list 2>/dev/null | grep -E "platforms;android-3" || true
           echo "::endgroup::"
-          for pkg in "platforms;android-37.0" "platforms;android-37.1" "platforms;android-37.2" "build-tools;37.0.0" "platform-tools"; do
-            echo ">>> installing $pkg"
-            yes | sdkmanager "$pkg" || echo "::warning::failed to install $pkg"
+          for pkg in "platforms;android-37.0" "build-tools;37.0.0" "platform-tools"; do
+            yes | sdkmanager "$pkg" || echo "::warning::retry install failed for $pkg"
           done
-          echo "=== installed platforms ==="
-          ls -1 "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/platforms" || true
-          echo "=== installed build-tools ==="
-          ls -1 "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" || true
+          SDK_DIR="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          echo "=== $SDK_DIR/platforms ==="
+          ls -1 "$SDK_DIR/platforms" || true
+          echo "=== $SDK_DIR/build-tools ==="
+          ls -1 "$SDK_DIR/build-tools" || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
