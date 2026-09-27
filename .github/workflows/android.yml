@@ -24,8 +24,26 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: 'platforms;android-37 build-tools;37.0.0 platform-tools'
+
+      # 注意：sdkmanager 中不存在 "platforms;android-37"。
+      # 从 API 37 起 Google 改用 minor api level 命名，仓库里实际是
+      # platforms;android-37.0 / 37.1 / 37.2（对应 AGP DSL 的
+      # release(37) { minorApiLevel = 0 }），所以这里逐个显式安装。
+      - name: Install Android 37 platform & build-tools
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          echo "::group::available android-3x platforms in repository"
+          sdkmanager --list 2>/dev/null | grep -E "platforms;android-3" || true
+          echo "::endgroup::"
+          for pkg in "platforms;android-37.0" "platforms;android-37.1" "platforms;android-37.2" "build-tools;37.0.0" "platform-tools"; do
+            echo ">>> installing $pkg"
+            yes | sdkmanager "$pkg" || echo "::warning::failed to install $pkg"
+          done
+          echo "=== installed platforms ==="
+          ls -1 "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/platforms" || true
+          echo "=== installed build-tools ==="
+          ls -1 "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
