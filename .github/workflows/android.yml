@@ -5,6 +5,9 @@ on:
   push:
     branches: [ main, master ]
 
+permissions:
+  contents: write           # 允许用内置 GITHUB_TOKEN 创建 Release
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,9 +34,22 @@ jobs:
       - name: Build debug APK
         run: gradle :app:assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Upload APK (Artifacts 备份)
         uses: actions/upload-artifact@v4
         with:
           name: HSLHomeClone-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: dev-${{ github.run_number }}
+          name: 开发版构建 dev-${{ github.run_number }} (${{ github.sha }})
+          body: |
+            自动构建产物（每次 workflow 运行更新）。
+            - Commit: ${{ github.sha }}
+            - 分支: ${{ github.ref_name }}
+            - 类型: Debug APK（调试签名，可直接安装）
+          prerelease: true
+          files: app/build/outputs/apk/debug/app-debug.apk
