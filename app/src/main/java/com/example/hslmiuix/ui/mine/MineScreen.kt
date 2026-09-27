@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import com.example.hslmiuix.data.Store
 import kotlinx.coroutines.launch
@@ -40,7 +39,7 @@ import top.yukonga.miuix.kmp.basic.SnackbarHostState
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.basic.ArrowRight
+import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.icon.extended.Contacts
 import top.yukonga.miuix.kmp.icon.extended.Favorites
 import top.yukonga.miuix.kmp.icon.extended.GridView
@@ -79,9 +78,8 @@ fun MineScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = MiuixIcons.ArrowRight,
+                            imageVector = MiuixIcons.Back,
                             contentDescription = "返回",
-                            modifier = Modifier.rotate(180f),
                         )
                     }
                 },
@@ -224,7 +222,7 @@ fun MineScreen(
                             },
                             items = listOf("跟随系统", "浅色", "深色"),
                             selectedIndex = Store.appearance,
-                            onSelectedIndexChange = { Store.setAppearance(it) },
+                            onSelectedIndexChange = { Store.updateAppearance(it) },
                         )
                     }
                 }

@@ -1,12 +1,11 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-kotlin {
-    jvmToolchain(21)
-}
+// 注意：AGP 9.0+ 已内置 Kotlin 支持，不能再应用 org.jetbrains.kotlin.android 插件，
+// 否则构建期直接报错（See https://kotl.in/gradle/agp-built-in-kotlin）。
+// JVM 目标由下方 compileOptions 与 JDK 21 launcher 决定。
 
 android {
     namespace = "com.example.hslmiuix"
@@ -23,6 +22,11 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0.0"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     buildTypes {

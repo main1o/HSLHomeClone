@@ -60,7 +60,8 @@ object Store {
     var appearance by mutableIntStateOf(0)
         private set
 
-    fun setAppearance(mode: Int) {
+    /** 切换外观模式（避开 appearance 属性自动生成的 setAppearance JVM 签名冲突） */
+    fun updateAppearance(mode: Int) {
         appearance = mode
     }
 
